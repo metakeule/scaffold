@@ -8,11 +8,11 @@ Create a template e.g.
 
 ```
 { // here is the help / example area
-    Models: [
+    "Models": [
         {
-            Name: "",
-            Fields: [
-                {Name: "", Type: ""}
+            "Name": "",
+            "Fields": [
+                {"Name": "", "Type": ""}
             ]
         }
     ]
@@ -42,9 +42,9 @@ Inside the real template placeholders in go template syntax may be used and the 
 
 ```go
 var FuncMap = template.FuncMap{
-    "replace":    Replace,
-    "camelCase1": CamelCase1,
-    "camelCase2": CamelCase2,
+    "replace":    Replace,    // replaces all occurences
+    "camelCase1": CamelCase1, // some_string => SomeString
+    "camelCase2": CamelCase2, // some_string => someString
     "title":      strings.Title,
     "toLower":    strings.ToLower,
     "toUpper":    strings.ToUpper,
@@ -63,17 +63,17 @@ The scaffolding takes place by using a template like this and apply some json st
 
 ```json
 { 
-    Models: [
+    "Models": [
         {
-            Name: "first_model",
-            Fields: [
-                {Name: "first_field", Type: "string"},
-                {Name: "second_field", Type: "int"}
+            "Name": "first_model",
+            "Fields": [
+                {"Name": "first_field", "Type": "string"},
+                {"Name": "second_field", "Type": "int"}
             ]
         },
         {
-            Name: "second_model",
-            Fields: [
+            "Name": "second_model",
+            "Fields": [
                 ...
             ]
         }
