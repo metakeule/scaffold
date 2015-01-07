@@ -1,3 +1,5 @@
 # scaffold
 
-scaffolding via mustache templates
+scaffolding via go templates
+
+see example directory

@@ -1,0 +1,27 @@
+{
+	Models: [
+		{
+			Name: "",
+			Fields: [
+				{Name: "", Type: ""}
+			]
+		}
+	]
+}
+
+{{range .Models}}
+>>>models/
+>>>{{toLower .Name}}/
+>>>model.go
+package {{replace .Name "_" "."}}
+
+type {{camelCase1 .Name}} struct {
+{{range .Fields}}
+	{{camelCase1 .Name}} {{.Type}}
+{{end}}
+}
+
+<<<model.go
+<<<{{toLower .Name}}/
+<<<models/
+{{end}}

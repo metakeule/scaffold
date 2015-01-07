@@ -1,0 +1,30 @@
+{
+	"Models": [
+		{
+			"Name": "person",
+			"Fields": [
+				{
+					"Name": "first_name",
+					"Type": "string"
+				},
+				{
+					"Name": "last_name",
+					"Type": "string"
+				}
+			]
+		},
+		{
+			"Name": "address",
+			"Fields": [
+				{
+					"Name": "street_no",
+					"Type": "string"
+				},
+				{
+					"Name": "city",
+					"Type": "string"
+				}
+			]
+		}
+	]
+}
