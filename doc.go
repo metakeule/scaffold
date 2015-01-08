@@ -7,9 +7,9 @@ Package scaffold provides file and directory generation based on templates.
 
 A template consists of 3 parts:
 
-1. help section (must not contain an empty line)
-2. an empty line
-3. core template
+    1. help section (must not contain an empty line)
+    2. an empty line
+    3. core template
 
 The help section might contain anything but empty lines, but it is recommended to put some annotated
 json string as example for the usage into it. Also authorship of the template and contact infos can be
@@ -24,15 +24,26 @@ Context
 
 A context inside a template is a folder or a file context.
 A context is started by a line with the prefix ">>>" and ends by a line with the prefix "<<<".
-The context is identified by what follows after ">>>" or "<<<", i.e. the context
-">>>a" is ended by "<<<a".
+Each context has a name that follows after ">>>" or "<<<" until the end of the line.
+For example the context ">>>a" is ended by "<<<a" and the name of the context would be "a".
 
-If the context defining line ends with a slash (/), the context is a folder context otherwise it
+If the name of the context ends with a slash (/), the context is a folder context otherwise it
 is a file context.
 
-A file context is the content of a file with the surrounding folder context. A folder context is a folder
-inside the surrounding folder context. The outermost folder context is the baseDir parameter of the Run function
-(defaults to the current working directory in the CLI tool).
+The name of a file context defines the name of the file into which the content
+of the context will be saved. The folder of the file is defined by the surrounding folder contexts.
+The outermost folder context is the baseDir parameter of the Run function (defaults to the current working directory in the CLI tool).
+
+The following would create the file "fileZ.txt" inside the folder "[baseDir]/folder1/folderA". Any missing directories a created
+on the fly.
+
+    >>>folder1/
+    >>>folderA/
+    >>>fileZ.txt
+    Hello World
+    <<<fileZ.txt
+    <<<folderA/
+    <<<folder1/
 
 The placeholders inside the template are organized as a json object. When the Run function is called, the
 json objects is first applied to the template and then the folders and files are created as defined in the
