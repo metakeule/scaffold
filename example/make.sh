@@ -1,2 +1,2 @@
 #!/bin/sh
-cat models.json | scaffold models.templ
+scaffold -t=models.templ < models.json
