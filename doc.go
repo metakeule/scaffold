@@ -5,10 +5,11 @@
 /*
 Package scaffold provides file and directory generation based on templates.
 
-A template consists of 3 parts:
+A template must be UTF8 without byte order marker and have \n (linefeed) as line terminator.
+It has three parts:
 
     1. head (must not contain an empty line)
-    2. an empty line
+    2. empty line
     3. body
 
 The head might contain anything but empty lines, but it is recommended to put some annotated
