@@ -16,7 +16,7 @@ Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
 	templateArg = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
 	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
-	exampleCmd  = cfg.MustCommand("example", "shows the example section of the given template")
+	exampleCmd  = cfg.MustCommand("example", "shows the example section of the given template").Skip("dir")
 	testCmd     = cfg.MustCommand("test", "makes a test run without creating any files")
 )
 
