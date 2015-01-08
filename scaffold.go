@@ -13,6 +13,9 @@ import (
 	"text/template"
 )
 
+// FuncMap provides functions to the template.
+// New functions can be added as needed. The usual restrictions for
+// text/template.FuncMap apply (see http://golang.org/pkg/text/template/#FuncMap)
 var FuncMap = template.FuncMap{
 	"replace":    Replace,
 	"camelCase1": CamelCase1,
@@ -23,6 +26,7 @@ var FuncMap = template.FuncMap{
 	"trim":       strings.Trim,
 }
 
+// CamelCase1 converts a string in snake_case to CamelCase where the first letter of each word is capitalized
 func CamelCase1(src string) string {
 	s := strings.Split(src, "_")
 	for i, _ := range s {
@@ -31,6 +35,7 @@ func CamelCase1(src string) string {
 	return strings.Join(s, "")
 }
 
+// CamelCase2 converts a string in snake_case to camelCase where the first letter of each but the first word is capitalized
 func CamelCase2(src string) string {
 	s := strings.Split(src, "_")
 	for i, _ := range s {
@@ -41,10 +46,15 @@ func CamelCase2(src string) string {
 	return strings.Join(s, "")
 }
 
+// Replace replaces every occurence of old in s by new
 func Replace(s, old, new string) string {
 	return strings.Replace(s, old, new, -1)
 }
 
+// writeFile creates the given file with the given content if isTest is true.
+// Needed directories are created on the fly and each file name is written to log
+// if log is not nil.
+// If isTest is true, no files and directories are created.
 func writeFile(file string, content []byte, log io.Writer, isTest bool) error {
 	dir := filepath.Dir(file)
 	s, err := os.Stat(dir)
@@ -67,10 +77,13 @@ func writeFile(file string, content []byte, log io.Writer, isTest bool) error {
 	return nil
 }
 
-func parseGenerator(startDir string, rd io.Reader, log io.Writer, isTest bool) error {
+// parseGenerator creates files and directories beneath baseDir as defined in the reader.
+// The file names are written to log if it is not nil.
+// If isTest is true, no files and directories are created.
+func parseGenerator(baseDir string, rd io.Reader, log io.Writer, isTest bool) error {
 	scanner := bufio.NewScanner(rd)
 	var file string
-	var dir = startDir
+	var dir = baseDir
 	var bf bytes.Buffer
 	var line = -1
 	for scanner.Scan() {
@@ -118,21 +131,26 @@ func parseGenerator(startDir string, rd io.Reader, log io.Writer, isTest bool) e
 	return nil
 }
 
-func SplitTemplate(s string) (help, templ string) {
-	spl := strings.SplitN(s, "\n\n", 2)
+// SplitTemplate splits the given template on the first empty line.
+// It returns the head and body of the template.
+// Templates must be UTF8 without byte order marker and have \n (linefeed) as line terminator.
+func SplitTemplate(template string) (head, body string) {
+	spl := strings.SplitN(template, "\n\n", 2)
 	return spl[0], spl[1]
 }
 
+// convertJSON converts json to a map
 func convertJSON(rd io.Reader) (data map[string]interface{}, err error) {
 	data = map[string]interface{}{}
 	err = json.NewDecoder(rd).Decode(&data)
 	return
 }
 
-func substitute(templ string, data map[string]interface{}) (rd io.Reader, err error) {
+// mix mixes the given data to the template body
+func mix(body string, data map[string]interface{}) (rd io.Reader, err error) {
 	var bf bytes.Buffer
 	t := template.New("x").Funcs(FuncMap)
-	t, err = t.Parse(templ)
+	t, err = t.Parse(body)
 	if err != nil {
 		return
 	}
@@ -141,7 +159,11 @@ func substitute(templ string, data map[string]interface{}) (rd io.Reader, err er
 	return
 }
 
-func Run(baseDir string, template string, input io.Reader, log io.Writer, isTest bool) error {
+// Run mixes the properties of the json object to the template body. The result is then used
+// to create files and directories beneath baseDir.
+// If isTest is true the files and directories are not really created.
+// If log is not nil a list of files that will be created is written to log.
+func Run(baseDir string, body string, json io.Reader, log io.Writer, isTest bool) error {
 
 	var (
 		err          error
@@ -155,9 +177,9 @@ steps:
 		default:
 			break steps
 		case 0:
-			placeholders, err = convertJSON(input)
+			placeholders, err = convertJSON(json)
 		case 1:
-			generator, err = substitute(template, placeholders)
+			generator, err = mix(body, placeholders)
 		case 2:
 			err = parseGenerator(baseDir, generator, log, isTest)
 		}
