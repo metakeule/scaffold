@@ -93,7 +93,11 @@ func parseGenerator(baseDir string, rd io.Reader, log io.Writer, isTest bool) er
 			fd := strings.TrimSpace(strings.TrimPrefix(s, ">>>"))
 			if fd[len(fd)-1] == '/' {
 				dir = filepath.Join(dir, fd)
+				file = ""
 			} else {
+				if file != "" {
+					return fmt.Errorf("syntax error in line %d embedding file within file is not allowed (%#v inside %#v)", line, fd, file)
+				}
 				file = filepath.Join(dir, fd)
 			}
 			continue
