@@ -45,11 +45,13 @@ func Replace(s, old, new string) string {
 	return strings.Replace(s, old, new, -1)
 }
 
-func writeFile(file string, content []byte, log io.Writer) error {
+func writeFile(file string, content []byte, log io.Writer, isTest bool) error {
 	dir := filepath.Dir(file)
 	s, err := os.Stat(dir)
 	if err != nil {
-		os.MkdirAll(dir, 0770)
+		if !isTest {
+			os.MkdirAll(dir, 0770)
+		}
 	} else {
 		if !s.IsDir() {
 			return fmt.Errorf("not a directory: %#v", dir)
@@ -59,10 +61,13 @@ func writeFile(file string, content []byte, log io.Writer) error {
 		log.Write([]byte(file + "\n"))
 	}
 
-	return ioutil.WriteFile(file, content, 0664)
+	if !isTest {
+		return ioutil.WriteFile(file, content, 0664)
+	}
+	return nil
 }
 
-func parseGenerator(startDir string, rd io.Reader, log io.Writer) error {
+func parseGenerator(startDir string, rd io.Reader, log io.Writer, isTest bool) error {
 	scanner := bufio.NewScanner(rd)
 	var file string
 	var dir = startDir
@@ -94,7 +99,7 @@ func parseGenerator(startDir string, rd io.Reader, log io.Writer) error {
 				if base != fd {
 					return fmt.Errorf("syntax error in line %d closing file %#v but should close file %#v", line, fd, base)
 				}
-				err := writeFile(file, bf.Bytes(), log)
+				err := writeFile(file, bf.Bytes(), log, isTest)
 				if err != nil {
 					return err
 				}
@@ -136,7 +141,7 @@ func substitute(templ string, data map[string]interface{}) (rd io.Reader, err er
 	return
 }
 
-func Run(baseDir string, template string, input io.Reader, log io.Writer) error {
+func Run(baseDir string, template string, input io.Reader, log io.Writer, isTest bool) error {
 
 	var (
 		err          error
@@ -154,7 +159,7 @@ steps:
 		case 1:
 			generator, err = substitute(template, placeholders)
 		case 2:
-			err = parseGenerator(baseDir, generator, log)
+			err = parseGenerator(baseDir, generator, log, isTest)
 		}
 	}
 	return err
