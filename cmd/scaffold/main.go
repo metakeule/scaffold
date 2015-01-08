@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"gopkg.in/metakeule/config.v1"
-	"gopkg.in/metakeule/scaffold.v0"
+	"gopkg.in/metakeule/scaffold.v1"
 	"io/ioutil"
 	"os"
 	"path/filepath"
