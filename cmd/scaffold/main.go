@@ -2,19 +2,30 @@ package main
 
 import (
 	"fmt"
-	"github.com/metakeule/scaffold"
+	"gopkg.in/metakeule/scaffold.v0"
+	"gopkg.in/metakeule/config.v1"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
+var (
+	cfg = config.MustNew("scaffold", "1.0",
+		`scaffold creates files and directories based on a template and json input.
+		Complete documentation at http://godoc.org/github.com/metakeule/scaffold.`)
+
+	templateArg = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
+	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
+	exampleCmd  = cfg.MustCommand("example", "shows the example section of the given template")
+)
+
 func main() {
 
 	var (
-		err            error
-		workingDir     string
-		templateRaw    []byte
-		help, template string
+		err               error
+		dir               string
+		templateRaw       []byte
+		example, template string
 	)
 
 steps:
@@ -23,28 +34,27 @@ steps:
 		default:
 			break steps
 		case 0:
-			if len(os.Args) < 2 {
-				err = fmt.Errorf("missing template argument")
-			}
+			err = cfg.Run()
 		case 1:
-			workingDir, err = os.Getwd()
+			dir = dirArg.Get()
 		case 2:
-			workingDir, err = filepath.Abs(workingDir)
+			dir, err = filepath.Abs(dir)
 		case 3:
-			templateRaw, err = ioutil.ReadFile(os.Args[1])
+			templateRaw, err = ioutil.ReadFile(templateArg.Get())
 		case 4:
-			help, template = scaffold.SplitTemplate(string(templateRaw))
-			if len(os.Args) > 2 && os.Args[2] == "help" {
-				fmt.Fprintln(os.Stdout, help)
-				os.Exit(0)
-			}
+			example, template = scaffold.SplitTemplate(string(templateRaw))
 		case 5:
-			err = scaffold.Run(workingDir, template, os.Stdin, os.Stdout)
+			switch cfg.ActiveCommand() {
+			case nil:
+				err = scaffold.Run(dir, template, os.Stdin, os.Stdout)
+			case exampleCmd:
+				fmt.Fprintln(os.Stdout, example)
+			}
 		}
 	}
+
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		fmt.Fprintln(os.Stderr, help)
 		os.Exit(1)
 	}
 }
