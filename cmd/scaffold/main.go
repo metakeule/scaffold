@@ -12,7 +12,7 @@ import (
 var (
 	cfg = config.MustNew("scaffold", "1.0",
 		`scaffold creates files and directories based on a template and json input.
-		Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
+Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
 	templateArg = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
 	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
