@@ -6,7 +6,7 @@
 Package scaffold provides file and directory generation based on templates.
 
 A template must be UTF8 without byte order marker and have \n (linefeed) as line terminator.
-It has three parts:
+It has a head and a body, separated by an empty line:
 
     1. head (must not contain an empty line)
     2. empty line
