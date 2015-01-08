@@ -16,7 +16,7 @@ Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
 	templateArg = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
 	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
-	exampleCmd  = cfg.MustCommand("example", "shows the example section of the given template").Skip("dir")
+	headCmd     = cfg.MustCommand("head", "shows the head section of the given template").Skip("dir")
 	testCmd     = cfg.MustCommand("test", "makes a test run without creating any files")
 )
 
@@ -40,14 +40,14 @@ steps:
 		case 2:
 			templateRaw, err = ioutil.ReadFile(templateArg.Get())
 		case 3:
-			example, template := scaffold.SplitTemplate(string(templateRaw))
+			head, template := scaffold.SplitTemplate(string(templateRaw))
 			switch cfg.ActiveCommand() {
 			case nil:
 				err = scaffold.Run(dir, template, os.Stdin, os.Stdout, false)
 			case testCmd:
 				err = scaffold.Run(dir, template, os.Stdin, os.Stdout, true)
-			case exampleCmd:
-				fmt.Fprintln(os.Stdout, example)
+			case headCmd:
+				fmt.Fprintln(os.Stdout, head)
 			}
 		}
 	}
