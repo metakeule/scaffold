@@ -57,16 +57,24 @@ func Replace(s, old, new string) string {
 // If isTest is true, no files and directories are created.
 func writeFile(file string, content []byte, log io.Writer, isTest bool) error {
 	dir := filepath.Dir(file)
-	s, err := os.Stat(dir)
-	if err != nil {
-		if !isTest {
-			os.MkdirAll(dir, 0770)
-		}
-	} else {
-		if !s.IsDir() {
+
+	if s, err := os.Stat(dir); err != nil || !s.IsDir() {
+		if err != nil {
+			if os.IsNotExist(err) {
+				if !isTest {
+					err = os.MkdirAll(dir, 0770)
+				} else {
+					err = nil
+				}
+			}
+			if err != nil {
+				return err
+			}
+		} else {
 			return fmt.Errorf("not a directory: %#v", dir)
 		}
 	}
+
 	if log != nil {
 		log.Write([]byte(file + "\n"))
 	}
