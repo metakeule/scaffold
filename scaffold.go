@@ -17,13 +17,31 @@ import (
 // New functions can be added as needed. The usual restrictions for
 // text/template.FuncMap apply (see http://golang.org/pkg/text/template/#FuncMap)
 var FuncMap = template.FuncMap{
-	"replace":    Replace,
-	"camelCase1": CamelCase1,
-	"camelCase2": CamelCase2,
-	"title":      strings.Title,
-	"toLower":    strings.ToLower,
-	"toUpper":    strings.ToUpper,
-	"trim":       strings.Trim,
+	"replace":          Replace,
+	"camelCase1":       CamelCase1,
+	"camelCase2":       CamelCase2,
+	"title":            strings.Title,
+	"toLower":          strings.ToLower,
+	"toUpper":          strings.ToUpper,
+	"trim":             strings.Trim,
+	"doubleCurlyOpen":  DoubleCurlyOpen,
+	"doubleCurlyClose": DoubleCurlyClose,
+	"dollar":           Dollar,
+}
+
+// Dollar returns a dollar char
+func Dollar() string {
+	return "$"
+}
+
+// DoubleCurlyOpen returns two open curly braces
+func DoubleCurlyOpen() string {
+	return "{{"
+}
+
+// DoubleCurlyClose returns two closed curly braces
+func DoubleCurlyClose() string {
+	return "}}"
 }
 
 // CamelCase1 converts a string in snake_case to CamelCase where the first letter of each word is capitalized

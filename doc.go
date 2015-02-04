@@ -53,6 +53,16 @@ The placeholders inside the body are organized as a json object / map. When the 
 json objects is mixed to the template and after that the folders and files are created as defined in the
 result. That makes it possible to use placeholders as parts of folder or file names.
 
+Escaping of double curly braces and dollar chars
+
+Curly braces and dollar chars are part of syntax of the go template engine and there
+is no syntax to replace them from inside the template. However, the scaffold package has
+included some helper functions that return them.
+
+   {{doubleCurlyOpen}}{{dollar}}{{doubleCurlyClose}}
+
+will result in the string "{{$}}".
+
 Most of the time this package will be used via the scaffold command sub package.
 
 It can be installed via
