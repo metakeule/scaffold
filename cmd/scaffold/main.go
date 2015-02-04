@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	cfg = config.MustNew("scaffold", "1.1",
+	cfg = config.MustNew("scaffold", "1.2",
 		`scaffold creates files and directories based on a template and json input.
 Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
