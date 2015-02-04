@@ -19,13 +19,17 @@ Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 	templateArg     = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
 	templatePathArg = cfg.NewString("path", "the path to look for template files, the different directories must be separated with a semicolon (;)")
 	dirArg          = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
+	verboseArg      = cfg.NewBool("verbose", "show verbose messages", config.Default(false), config.Shortflag('v'))
 	headCmd         = cfg.MustCommand("head", "shows the head section of the given template").Skip("dir")
 	testCmd         = cfg.MustCommand("test", "makes a test run without creating any files")
 
-	FileNotFound = errors.New("file not found")
+	FileNotFound = errors.New("template file not found")
 )
 
 func findInDir(path, file string) bool {
+	if verboseArg.Get() {
+		println("looking for ", filepath.Join(path, file))
+	}
 	fullPath, err := filepath.Abs(filepath.Join(path, file))
 	if err != nil {
 		return false
@@ -79,6 +83,7 @@ steps:
 		case 2:
 			file, err = findFile()
 		case 3:
+			println("found ", file)
 			templateRaw, err = ioutil.ReadFile(file)
 		case 4:
 			head, template := scaffold.SplitTemplate(string(templateRaw))
