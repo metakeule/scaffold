@@ -1,10 +1,10 @@
 package main
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
-	"gopkg.in/metakeule/config.v1"
-	"gopkg.in/metakeule/scaffold.v1"
+	"github.com/metakeule/config"
+	"github.com/metakeule/scaffold"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -12,19 +12,60 @@ import (
 )
 
 var (
-	cfg = config.MustNew("scaffold", "1.4",
+	cfg = config.MustNew("scaffold", "1.5",
 		`scaffold creates files and directories based on a template and json input.
 Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
-	templateArg     = cfg.NewString("template", "the file where the template resides", config.Required, config.Shortflag('t'))
+	templateArg = cfg.NewString("template", "the file where the template resides", config.Default("scaffold.template"), config.Shortflag('t'))
+	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
+
 	templatePathArg = cfg.NewString("path", "the path to look for template files, the different directories must be separated with a colon (:)")
-	dirArg          = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
 	verboseArg      = cfg.NewBool("verbose", "show verbose messages", config.Default(false), config.Shortflag('v'))
 	headCmd         = cfg.MustCommand("head", "shows the head section of the given template").Skip("dir")
 	testCmd         = cfg.MustCommand("test", "makes a test run without creating any files")
-
-	FileNotFound = errors.New("template file not found")
+	listCmd         = cfg.MustCommand("list", "prints a list of template files, residing in path").Skip("template")
 )
+
+type notFound string
+
+func (n notFound) Error() string {
+	return fmt.Sprintf("could not find template file %#v", string(n))
+}
+
+func printTemplates() {
+	paths := strings.Split(templatePathArg.Get(), ":")
+	for _, path := range paths {
+		if path == "" {
+			continue
+		}
+		fileinfos, err := ioutil.ReadDir(path)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Fprintf(os.Stderr, "skipping %s (missing)\n", path)
+			} else {
+				fmt.Fprintf(os.Stderr, "skipping %s (%s)\n", path, err)
+			}
+		} else {
+			var bf bytes.Buffer
+			for _, fi := range fileinfos {
+				if !fi.IsDir() {
+					name := fi.Name()
+					if name[0] != '.' {
+						bf.WriteString("  " + name + "\n")
+						// fmt.Fprintln(os.Stdout, name)
+					}
+				}
+			}
+
+			if bf.String() == "" {
+				fmt.Fprintf(os.Stdout, "no templates inside %s\n", path)
+			} else {
+				fmt.Fprintf(os.Stdout, "templates inside %s:\n%s\n", path, bf.String())
+			}
+		}
+	}
+
+}
 
 func findInDir(path, file string) bool {
 	if verboseArg.Get() {
@@ -59,7 +100,7 @@ func findFile() (fullPath string, err error) {
 			return filepath.Join(p, file+".template"), nil
 		}
 	}
-	return "", FileNotFound
+	return "", notFound(file)
 }
 
 func main() {
@@ -79,13 +120,18 @@ steps:
 		case 0:
 			err = cfg.Run()
 		case 1:
-			dir, err = filepath.Abs(dirArg.Get())
+			if cfg.ActiveCommand() == listCmd {
+				printTemplates()
+				os.Exit(0)
+			}
 		case 2:
-			file, err = findFile()
+			dir, err = filepath.Abs(dirArg.Get())
 		case 3:
+			file, err = findFile()
+		case 4:
 			println("found ", file)
 			templateRaw, err = ioutil.ReadFile(file)
-		case 4:
+		case 5:
 			head, template := scaffold.SplitTemplate(string(templateRaw))
 			switch cfg.ActiveCommand() {
 			case nil:
@@ -94,13 +140,15 @@ steps:
 				err = scaffold.Run(dir, template, os.Stdin, os.Stdout, true)
 			case headCmd:
 				fmt.Fprintln(os.Stdout, head)
+			default:
+				panic("unreachable")
 			}
 		}
 	}
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		fmt.Fprintln(os.Stdout, " -> run 'scaffold help' to get more help")
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
+		fmt.Fprintln(os.Stdout, "\n\n--------------------------------------\n\n"+cfg.Usage())
 		os.Exit(1)
 	}
 }

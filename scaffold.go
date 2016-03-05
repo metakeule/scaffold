@@ -166,6 +166,9 @@ func parseGenerator(baseDir string, rd io.Reader, log io.Writer, isTest bool) er
 // Templates must be UTF8 without byte order marker and have \n (linefeed) as line terminator.
 func SplitTemplate(template string) (head, body string) {
 	spl := strings.SplitN(template, "\n\n", 2)
+	if len(spl) != 2 {
+		return "", template
+	}
 	return spl[0], spl[1]
 }
 
