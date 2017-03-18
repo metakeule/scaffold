@@ -12,18 +12,21 @@ import (
 )
 
 var (
-	cfg = config.MustNew("scaffold", "1.5",
+	cfg = config.MustNew("scaffold", "1.6",
 		`scaffold creates files and directories based on a template and json input.
 Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
 
-	templateArg = cfg.NewString("template", "the file where the template resides", config.Default("scaffold.template"), config.Shortflag('t'))
-	dirArg      = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
-
+	templateArg     = cfg.NewString("template", "the file where the template resides", config.Default("scaffold.template"), config.Shortflag('t'))
+	dirArg          = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))
 	templatePathArg = cfg.NewString("path", "the path to look for template files, the different directories must be separated with a colon (:)")
 	verboseArg      = cfg.NewBool("verbose", "show verbose messages", config.Default(false), config.Shortflag('v'))
-	headCmd         = cfg.MustCommand("head", "shows the head section of the given template").Skip("dir")
-	testCmd         = cfg.MustCommand("test", "makes a test run without creating any files")
-	listCmd         = cfg.MustCommand("list", "prints a list of template files, residing in path").Skip("template")
+
+	headCmd    = cfg.MustCommand("head", "shows the head section of the given template").Skip("dir")
+	testCmd    = cfg.MustCommand("test", "makes a test run without creating any files")
+	scanCmd    = cfg.MustCommand("scan", "scan scans a directory and generates a template based on it. placeholders in dirs and files must start with #").Skip("template").Skip("dir")
+	scanDirArg = scanCmd.NewString("scandir", "directory which is scanned to create the template", config.Default("."))
+
+	listCmd = cfg.MustCommand("list", "prints a list of template files, residing in path").Skip("template")
 )
 
 type notFound string
@@ -108,8 +111,10 @@ func main() {
 	var (
 		err         error
 		dir         string
+		scanDir     string
 		file        string
 		templateRaw []byte
+		templ       []byte
 	)
 
 steps:
@@ -120,18 +125,31 @@ steps:
 		case 0:
 			err = cfg.Run()
 		case 1:
+			if cfg.ActiveCommand() == scanCmd {
+				scanDir, err = filepath.Abs(scanDirArg.Get())
+			}
+		case 2:
+			if cfg.ActiveCommand() == scanCmd {
+				templ, err = scaffold.Scan(scanDir)
+				if err == nil {
+					fmt.Fprintln(os.Stdout, string(templ))
+					os.Exit(0)
+				}
+				break steps
+			}
+		case 3:
 			if cfg.ActiveCommand() == listCmd {
 				printTemplates()
 				os.Exit(0)
 			}
-		case 2:
-			dir, err = filepath.Abs(dirArg.Get())
-		case 3:
-			file, err = findFile()
 		case 4:
+			dir, err = filepath.Abs(dirArg.Get())
+		case 5:
+			file, err = findFile()
+		case 6:
 			println("found ", file)
 			templateRaw, err = ioutil.ReadFile(file)
-		case 5:
+		case 7:
 			head, template := scaffold.SplitTemplate(string(templateRaw))
 			switch cfg.ActiveCommand() {
 			case nil:

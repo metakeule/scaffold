@@ -9,8 +9,8 @@
 	]
 }
 
-{{range .Models}}
 >>>models/
+{{range .Models}}
 >>>{{toLower .Name}}/
 >>>model.go
 package {{replace .Name "_" "."}}
@@ -23,5 +23,5 @@ type {{camelCase1 .Name}} struct {
 
 <<<model.go
 <<<{{toLower .Name}}/
-<<<models/
 {{end}}
+<<<models/

@@ -6,6 +6,79 @@ import (
 	"testing"
 )
 
+func TestSplitFilename(t *testing.T) {
+
+	tests := []struct {
+		input string
+		bare  string
+		ext   string
+	}{
+		{"test.txt", "test", ".txt"},
+		{"test.a.b", "test.a", ".b"},
+	}
+
+	for _, test := range tests {
+		bare, ext := splitFilename(test.input)
+
+		if bare != test.bare || ext != test.ext {
+			t.Errorf("splitFilename(%#v) = %#v, %#v; want %#v, %#v", test.input, bare, ext, test.bare, test.ext)
+		}
+	}
+
+}
+
+func TestIsLowercase(t *testing.T) {
+
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"A", false},
+		{"B", false},
+		{"C", false},
+		{"D", false},
+		{"X", false},
+		{"Y", false},
+		{"Z", false},
+		{"a", true},
+		{"b", true},
+		{"c", true},
+		{"d", true},
+		{"x", true},
+		{"y", true},
+		{"z", true},
+	}
+
+	for _, test := range tests {
+
+		if got, want := isLowercase(test.input), test.expected; got != want {
+			t.Errorf("isLowercase(%#v) = %v; want %v", test.input, got, want)
+		}
+	}
+
+}
+
+func TestFileName(t *testing.T) {
+
+	/*
+		([^-a-zA-Z_0-9])
+	*/
+
+	tests := []struct {
+		input, expected string
+	}{
+		{" \\A/ want's 853 : until . # * +-0?@µ ", "A-wants-853-until-0"},
+	}
+
+	for _, test := range tests {
+
+		if got, want := FileName(test.input), test.expected; got != want {
+			t.Errorf("FileName(%#v) = %#v; want %#v", test.input, got, want)
+		}
+	}
+
+}
+
 func TestCamelCase1(t *testing.T) {
 
 	tests := []struct {

@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -18,6 +19,8 @@ import (
 // text/template.FuncMap apply (see http://golang.org/pkg/text/template/#FuncMap)
 var FuncMap = template.FuncMap{
 	"replace":          Replace,
+	"filename":         FileName,
+	"filenameLower":    FileNameLower,
 	"camelCase1":       CamelCase1,
 	"camelCase2":       CamelCase2,
 	"title":            strings.Title,
@@ -44,10 +47,31 @@ func DoubleCurlyClose() string {
 	return "}}"
 }
 
+var fnameRegExp = regexp.MustCompile("([^-a-zA-Z_0-9])")
+var fnameRegExp2nd = regexp.MustCompile("(-+)")
+
+// FileName converts a string to a safe filename.
+// First leading and trailing spaces are removed
+// Every other space is replaced by -
+// Multiple following - are replaced by on single -
+// Every character other than [-a-zA-Z_0-9] is removed
+func FileName(in string) (out string) {
+	out = strings.TrimSpace(in)
+	out = strings.Replace(out, " ", "-", -1)
+	out = fnameRegExp.ReplaceAllLiteralString(out, "")
+	out = fnameRegExp2nd.ReplaceAllLiteralString(out, "-")
+	return
+}
+
+// same as FileName but transforms string to lowercase
+func FileNameLower(src string) string {
+	return strings.ToLower(src)
+}
+
 // CamelCase1 converts a string in snake_case to CamelCase where the first letter of each word is capitalized
 func CamelCase1(src string) string {
 	s := strings.Split(src, "_")
-	for i, _ := range s {
+	for i := range s {
 		s[i] = strings.Title(s[i])
 	}
 	return strings.Join(s, "")
@@ -56,7 +80,7 @@ func CamelCase1(src string) string {
 // CamelCase2 converts a string in snake_case to camelCase where the first letter of each but the first word is capitalized
 func CamelCase2(src string) string {
 	s := strings.Split(src, "_")
-	for i, _ := range s {
+	for i := range s {
 		if i != 0 {
 			s[i] = strings.Title(s[i])
 		}
