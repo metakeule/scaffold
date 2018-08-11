@@ -259,7 +259,7 @@ func TestRun(t *testing.T) {
 			t.Errorf("Run(%#v, %#v, %#v,...) returned error: %v", test.dir, test.body, test.json, err)
 			continue
 		}
-		if got, want := log.String(), test.expected; got != want {
+		if got, want := log.String(), strings.Replace(test.expected, "\\\\", "/", -1); got != want {
 			t.Errorf("Run(%#v, %#v, %#v,...) = %#v; want %#v", test.dir, test.body, test.json, got, want)
 		}
 	}
