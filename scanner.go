@@ -63,7 +63,7 @@ func (s *scanner) closeDir(currentFile string) {
 
 	// file is not part of the currentDir, that means
 	// we left the currentDir, so close the dir and set the currentDirPath accordingly
-	if !strings.Contains(dir, s.currentDirPath) {
+	if !strings.Contains(s.currentDirPath, dir) && s.currentDirPath != "" {
 		s._closeDir()
 	}
 
@@ -88,7 +88,9 @@ func fixName(in string) string {
 
 func splitFilename(file string) (withoutext, ext string) {
 	idx := strings.LastIndex(file, ".")
-
+	if idx == -1 {
+		return file, ""
+	}
 	return file[:idx], file[idx:]
 }
 
