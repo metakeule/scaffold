@@ -7,7 +7,7 @@ scaffolding via go templates
 Installation
 ============
 
-`go get github.com/metakeule/scaffold/cmd/scaffold`
+`go get -d -t github.com/metakeule/scaffold/...`
 
 Usage
 =====
