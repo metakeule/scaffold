@@ -17,12 +17,8 @@ given the following template (file `models.templ`)
 ```go
 {
     "Models": [
-        {
-            "Name": "",
-            "Fields": [
-                {"Name": "", "Type": ""}
-            ]
-        }
+        {   "Name": "",
+            "Fields": [ {"Name": "", "Type": ""} ] }
     ]
 }
 
@@ -37,14 +33,11 @@ type {{camelCase1 .Name}} struct {
     {{camelCase1 .Name}} {{.Type}}
 {{end}}
 }
-
 <<<model.go
 <<<{{toLower .Name}}/
 {{end}}
 <<<models/
-
 ```
-
 and the following json (file `models.json`)
 
 ```json
@@ -53,27 +46,15 @@ and the following json (file `models.json`)
         {
             "Name": "person",
             "Fields": [
-                {
-                    "Name": "first_name",
-                    "Type": "string"
-                },
-                {
-                    "Name": "last_name",
-                    "Type": "string"
-                }
+                {"Name": "first_name","Type": "string"},
+                {"Name": "last_name" ,"Type": "string"}
             ]
         },
         {
             "Name": "address",
             "Fields": [
-                {
-                    "Name": "street_no",
-                    "Type": "string"
-                },
-                {
-                    "Name": "city",
-                    "Type": "string"
-                }
+                {"Name": "street_no","Type": "string"},
+                {"Name": "city","Type": "string"}
             ]
         }
     ]
@@ -102,13 +83,9 @@ where `models/address/model.go` contains
 package address
 
 type Address struct {
-
     StreetNo string
-
     City string
-
 }
-
 ```
 
 and `models/person/model.go` contains
@@ -117,11 +94,13 @@ and `models/person/model.go` contains
 package person
 
 type Person struct {
-
     FirstName string
-
     LastName string
-
 }
-
 ```
+
+To help generating a template from an existing file structure, make sure, you just have one item per collection and then run 
+
+`scaffold scan --scandir=your/dir`
+
+and edit your template as you need.
