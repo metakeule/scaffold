@@ -2,7 +2,7 @@
 
 scaffolding via go templates
 
-[![Build Status Travis](https://secure.travis-ci.org/metakeule/scaffold.png)](http://travis-ci.org/metakeule/scaffold) [![Documentation](http://godoc.org/gopkg.in/metakeule/scaffold.v1?status.png)](http://godoc.org/gopkg.in/metakeule/scaffold.v1) 
+[![Build Status Travis](https://secure.travis-ci.org/metakeule/scaffold.png)](http://travis-ci.org/metakeule/scaffold) [![Build status](https://ci.appveyor.com/api/projects/status/n00w2243bfv6h07p?svg=true)](https://ci.appveyor.com/project/metakeule/scaffold) [![Documentation](http://godoc.org/gopkg.in/metakeule/scaffold.v1?status.png)](http://godoc.org/metakeule/scaffold) 
 
 Installation
 ============
