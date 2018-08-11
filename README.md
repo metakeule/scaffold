@@ -86,7 +86,7 @@ when running the command
 scaffold -t=models.templ < models.json
 ```
 
-the following directory structure would be built:
+the following directory structure would be build:
 
 ```sh
 models
