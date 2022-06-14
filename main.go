@@ -3,18 +3,19 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/metakeule/config"
-	"github.com/metakeule/scaffold"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"gitlab.com/metakeule/config"
+	"gitlab.com/metakeule/scaffold/lib/scaffold"
 )
 
 var (
-	cfg = config.MustNew("scaffold", "1.6.1",
+	cfg = config.MustNew("scaffold", "1.7.0",
 		`scaffold creates files and directories based on a template and json input.
-Complete documentation at http://godoc.org/gopkg.in/metakeule/scaffold.v1`)
+Complete documentation at https://pkg.go.dev/gitlab.com/metakeule/scaffold`)
 
 	templateArg     = cfg.NewString("template", "the file where the template resides", config.Default("scaffold.template"), config.Shortflag('t'))
 	dirArg          = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))

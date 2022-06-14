@@ -2,12 +2,10 @@
 
 scaffolding via go templates
 
-[![Build Status Travis](https://secure.travis-ci.org/metakeule/scaffold.png)](http://travis-ci.org/metakeule/scaffold) [![Build status](https://ci.appveyor.com/api/projects/status/n00w2243bfv6h07p?svg=true)](https://ci.appveyor.com/project/metakeule/scaffold) [![Documentation](http://godoc.org/gopkg.in/metakeule/scaffold.v1?status.png)](http://godoc.org/metakeule/scaffold) 
-
 Installation
 ============
 
-`go get -d -t github.com/metakeule/scaffold/...`
+`go install gitlab.com/metakeule/scaffold@latest`
 
 Usage
 =====
@@ -72,7 +70,7 @@ the following directory structure would be build:
 ```sh
 models
 ├── address
-│   └── model.go
+│   └── model.go
 └── person
     └── model.go
 ```
