@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	cfg = config.MustNew("scaffold", "1.7.0",
+	cfg = config.MustNew("scaffold", "1.7.1",
 		`scaffold creates files and directories based on a template and json input.
-Complete documentation at https://pkg.go.dev/gitlab.com/metakeule/scaffold`)
+Complete documentation at https://pkg.go.dev/gitlab.com/metakeule/scaffold/lib/scaffold`)
 
 	templateArg     = cfg.NewString("template", "the file where the template resides", config.Default("scaffold.template"), config.Shortflag('t'))
 	dirArg          = cfg.NewString("dir", "directory that is the target/root of the file creations", config.Default("."))

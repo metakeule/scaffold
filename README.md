@@ -102,3 +102,8 @@ To help generating a template from an existing file structure, make sure, you ju
 `scaffold scan --scandir=your/dir`
 
 and edit your template as you need.
+
+Documentation
+=============
+
+https://pkg.go.dev/gitlab.com/metakeule/scaffold/lib/scaffold
