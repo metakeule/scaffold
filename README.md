@@ -1,5 +1,7 @@
 # scaffold
 
+**Note: If you are reading this on Github, please note that the repo has moved to Gitlab (gitlab.com/metakeule/scaffold) and this is only a mirror.**
+
 scaffolding via go templates
 
 Installation
